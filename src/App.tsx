@@ -103,57 +103,27 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vide: params.get("courier_vide") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vide: params.get("recipient_vide") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
+  const [errorHeader, setErrorHeader] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [copiedSceneIdx, setCopiedSceneIdx] = useState<number | null>(null);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
-    console.log("API KEY:", process.env.GEMINI_API_KEY);
+    setErrorHeader(null);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("Gemini API Key is missing. Please check your environment variables.");
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       
       const prompt = `
         Create a Veo prompt for a short cinematic story about a courier delivering a package to a recipient.
@@ -212,7 +182,7 @@ const [env, setEnv] = useState<Environment>(params.env);
       `;
 
       const response = await ai.models.generateContent({
-        model: "gemini-3.1-pro-preview",
+        model: "gemini-3-flash-preview",
         contents: prompt,
         config: {
           responseMimeType: "application/json",
@@ -240,10 +210,15 @@ const [env, setEnv] = useState<Environment>(params.env);
         }
       });
 
+      if (!response.text) {
+        throw new Error("No response text received from Gemini.");
+      }
+
       const result = JSON.parse(response.text || "{}");
       setGeneratedPrompt(result);
-    } catch (error) {
-      console.error("Generation failed:", error);
+    } catch (err: any) {
+      console.error("Generation failed:", err);
+      setErrorHeader(err.message || "Unknown error occurred during generation.");
     } finally {
       setIsGenerating(false);
     }
@@ -609,7 +584,28 @@ const [env, setEnv] = useState<Environment>(params.env);
             <CardContent className="p-0 flex-1 overflow-hidden">
               <ScrollArea className="h-[calc(100vh-250px)] p-6">
                 <AnimatePresence mode="wait">
-                  {!generatedPrompt && !isGenerating ? (
+                  {errorHeader ? (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="h-full flex flex-col items-center justify-center text-center space-y-4 py-20"
+                    >
+                      <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20">
+                        <RefreshCw className="w-8 h-8 text-red-500" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-medium text-red-500">Generation Failed</h3>
+                        <p className="text-sm text-[#8E9299] max-w-xs">{errorHeader}</p>
+                        <Button 
+                          variant="link" 
+                          onClick={handleGenerate}
+                          className="text-[#FF4444] hover:text-[#FF3333]"
+                        >
+                          Try Again
+                        </Button>
+                      </div>
+                    </motion.div>
+                  ) : !generatedPrompt && !isGenerating ? (
                     <motion.div 
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
