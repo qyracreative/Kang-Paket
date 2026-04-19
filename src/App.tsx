@@ -103,7 +103,41 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
+const getParams = () => {
+  const params = new URLSearchParams(window.location.search);
 
+  return {
+    courier: {
+      name: params.get("courier_name") || "",
+      type: params.get("courier_type") || "",
+      visual: params.get("courier_visual") || "",
+      personality: params.get("courier_personality") || "",
+      traits: params.get("courier_traits") || "",
+      characteristic: params.get("courier_characteristic") || "",
+      vide: params.get("courier_vide") || "",
+      outfit: params.get("courier_outfit") || "",
+      vehicle: params.get("courier_vehicle") || "",
+    },
+    recipient: {
+      name: params.get("recipient_name") || "",
+      type: params.get("recipient_type") || "",
+      visual: params.get("recipient_visual") || "",
+      personality: params.get("recipient_personality") || "",
+      traits: params.get("recipient_traits") || "",
+      characteristic: params.get("recipient_characteristic") || "",
+      vide: params.get("recipient_vide") || "",
+      outfit: params.get("recipient_outfit") || "",
+      location: params.get("recipient_location") || "",
+      package: params.get("recipient_package") || "",
+      reaction: params.get("recipient_reaction") || "",
+    },
+    env: {
+      weather: params.get("weather") || "",
+      atmosphere: params.get("atmosphere") || "",
+      tone: params.get("tone") || "",
+    }
+  };
+};
 export default function App() {
   const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
   const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
