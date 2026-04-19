@@ -139,9 +139,11 @@ const getParams = () => {
   };
 };
 export default function App() {
-  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
-  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
-  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
+  const params = getParams();
+
+const [courier, setCourier] = useState<Character>(params.courier);
+const [recipient, setRecipient] = useState<Character>(params.recipient);
+const [env, setEnv] = useState<Environment>(params.env);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [copied, setCopied] = useState(false);
