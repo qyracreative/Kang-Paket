@@ -40,12 +40,13 @@ interface Character {
   visual: string;
   personality: string;
   traits: string;
-  signature: string;
-  specialty: string;
-  vibe: string;
+  characteristic: string;
+  vide: string;
   outfit: string;
-  vehicleOrLocation: string;
-  packageOrReaction?: string;
+  location?: string;
+  vehicle?: string;
+  package?: string;
+  reaction?: string;
 }
 
 interface Environment {
@@ -75,11 +76,10 @@ const DEFAULT_COURIER: Character = {
   visual: "",
   personality: "",
   traits: "",
-  signature: "",
-  specialty: "",
-  vibe: "",
+  characteristic: "",
+  vide: "",
   outfit: "",
-  vehicleOrLocation: "",
+  vehicle: "",
 };
 
 const DEFAULT_RECIPIENT: Character = {
@@ -88,12 +88,12 @@ const DEFAULT_RECIPIENT: Character = {
   visual: "",
   personality: "",
   traits: "",
-  signature: "",
-  specialty: "",
-  vibe: "",
+  characteristic: "",
+  vide: "",
   outfit: "",
-  vehicleOrLocation: "",
-  packageOrReaction: "",
+  location: "",
+  package: "",
+  reaction: "",
 };
 
 const DEFAULT_ENV: Environment = {
@@ -134,11 +134,10 @@ export default function App() {
         - Visual: ${courier.visual}
         - Personality: ${courier.personality}
         - Traits: ${courier.traits}
-        - Signature: ${courier.signature}
-        - Specialty: ${courier.specialty}
-        - Vibe: ${courier.vibe}
+        - Characteristic: ${courier.characteristic}
+        - Vide: ${courier.vide}
         - Outfit: ${courier.outfit}
-        - Vehicle: ${courier.vehicleOrLocation}
+        - Vehicle: ${courier.vehicle}
         
         RECIPIENT DETAILS:
         - Name: ${recipient.name}
@@ -146,12 +145,12 @@ export default function App() {
         - Visual: ${recipient.visual}
         - Personality: ${recipient.personality}
         - Traits: ${recipient.traits}
-        - Signature: ${recipient.signature}
-        - Specialty: ${recipient.specialty}
-        - Vibe: ${recipient.vibe}
+        - Characteristic: ${recipient.characteristic}
+        - Vide: ${recipient.vide}
         - Outfit: ${recipient.outfit}
-        - Location: ${recipient.vehicleOrLocation}
-        - Package: ${recipient.packageOrReaction}
+        - Location: ${recipient.location}
+        - Package: ${recipient.package}
+        - Reaction: ${recipient.reaction}
         
         ENVIRONMENT:
         - Weather: ${env.weather}
@@ -310,23 +309,21 @@ export default function App() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Name</Label>
-                      <Input 
-                        value={courier.name} 
-                        onChange={e => setCourier({...courier, name: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444] transition-colors"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Type</Label>
-                      <Input 
-                        value={courier.type} 
-                        onChange={e => setCourier({...courier, type: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Name</Label>
+                    <Input 
+                      value={courier.name} 
+                      onChange={e => setCourier({...courier, name: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444] transition-colors"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Type</Label>
+                    <Input 
+                      value={courier.type} 
+                      onChange={e => setCourier({...courier, type: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase text-[#8E9299]">Visual Description</Label>
@@ -336,29 +333,35 @@ export default function App() {
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Personality</Label>
-                      <Input 
-                        value={courier.personality} 
-                        onChange={e => setCourier({...courier, personality: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Traits</Label>
-                      <Input 
-                        value={courier.traits} 
-                        onChange={e => setCourier({...courier, traits: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Personality</Label>
+                    <Input 
+                      value={courier.personality} 
+                      onChange={e => setCourier({...courier, personality: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase text-[#8E9299]">Signature</Label>
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Traits</Label>
                     <Input 
-                      value={courier.signature} 
-                      onChange={e => setCourier({...courier, signature: e.target.value})}
+                      value={courier.traits} 
+                      onChange={e => setCourier({...courier, traits: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Characteristic</Label>
+                    <Input 
+                      value={courier.characteristic} 
+                      onChange={e => setCourier({...courier, characteristic: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Vide</Label>
+                    <Input 
+                      value={courier.vide} 
+                      onChange={e => setCourier({...courier, vide: e.target.value})}
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
@@ -373,8 +376,8 @@ export default function App() {
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase text-[#8E9299]">Vehicle</Label>
                     <Input 
-                      value={courier.vehicleOrLocation} 
-                      onChange={e => setCourier({...courier, vehicleOrLocation: e.target.value})}
+                      value={courier.vehicle} 
+                      onChange={e => setCourier({...courier, vehicle: e.target.value})}
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
@@ -391,23 +394,21 @@ export default function App() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Name</Label>
-                      <Input 
-                        value={recipient.name} 
-                        onChange={e => setRecipient({...recipient, name: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Type</Label>
-                      <Input 
-                        value={recipient.type} 
-                        onChange={e => setRecipient({...recipient, type: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Name</Label>
+                    <Input 
+                      value={recipient.name} 
+                      onChange={e => setRecipient({...recipient, name: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Type</Label>
+                    <Input 
+                      value={recipient.type} 
+                      onChange={e => setRecipient({...recipient, type: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase text-[#8E9299]">Visual Description</Label>
@@ -417,29 +418,35 @@ export default function App() {
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Personality</Label>
-                      <Input 
-                        value={recipient.personality} 
-                        onChange={e => setRecipient({...recipient, personality: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase text-[#8E9299]">Traits</Label>
-                      <Input 
-                        value={recipient.traits} 
-                        onChange={e => setRecipient({...recipient, traits: e.target.value})}
-                        className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
-                      />
-                    </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Personality</Label>
+                    <Input 
+                      value={recipient.personality} 
+                      onChange={e => setRecipient({...recipient, personality: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase text-[#8E9299]">Signature</Label>
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Traits</Label>
                     <Input 
-                      value={recipient.signature} 
-                      onChange={e => setRecipient({...recipient, signature: e.target.value})}
+                      value={recipient.traits} 
+                      onChange={e => setRecipient({...recipient, traits: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Characteristic</Label>
+                    <Input 
+                      value={recipient.characteristic} 
+                      onChange={e => setRecipient({...recipient, characteristic: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Vide</Label>
+                    <Input 
+                      value={recipient.vide} 
+                      onChange={e => setRecipient({...recipient, vide: e.target.value})}
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
@@ -452,18 +459,26 @@ export default function App() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase text-[#8E9299]">Package</Label>
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Location</Label>
                     <Input 
-                      value={recipient.packageOrReaction} 
-                      onChange={e => setRecipient({...recipient, packageOrReaction: e.target.value})}
+                      value={recipient.location} 
+                      onChange={e => setRecipient({...recipient, location: e.target.value})}
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase text-[#8E9299]">Location</Label>
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Package</Label>
                     <Input 
-                      value={recipient.vehicleOrLocation} 
-                      onChange={e => setRecipient({...recipient, vehicleOrLocation: e.target.value})}
+                      value={recipient.package} 
+                      onChange={e => setRecipient({...recipient, package: e.target.value})}
+                      className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Reaction</Label>
+                    <Input 
+                      value={recipient.reaction} 
+                      onChange={e => setRecipient({...recipient, reaction: e.target.value})}
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
@@ -497,7 +512,7 @@ export default function App() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase text-[#8E9299]">Tone Description</Label>
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Tone Example</Label>
                     <Textarea 
                       value={env.tone} 
                       onChange={e => setEnv({...env, tone: e.target.value})}
