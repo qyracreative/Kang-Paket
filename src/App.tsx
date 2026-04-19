@@ -151,6 +151,7 @@ const [env, setEnv] = useState<Environment>(params.env);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    console.log("API KEY:", process.env.GEMINI_API_KEY);
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       
