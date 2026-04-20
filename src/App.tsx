@@ -103,47 +103,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vide") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vide") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -178,7 +142,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         - Personality: ${courier.personality}
         - Traits: ${courier.traits}
         - Characteristic: ${courier.characteristic}
-        - Vibe: ${courier.vide}
+        - Vibe: ${courier.vibe}
         - Outfit: ${courier.outfit}
         - Vehicle: ${courier.vehicle}
         
@@ -189,7 +153,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         - Personality: ${recipient.personality}
         - Traits: ${recipient.traits}
         - Characteristic: ${recipient.characteristic}
-        - Vibe: ${recipient.vide}
+        - Vibe: ${recipient.vibe}
         - Outfit: ${recipient.outfit}
         - Location: ${recipient.location}
         - Package: ${recipient.package}
@@ -406,10 +370,10 @@ const [env, setEnv] = useState<Environment>(params.env);
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase text-[#8E9299]">Vide</Label>
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Vibe</Label>
                     <Input 
-                      value={courier.vide} 
-                      onChange={e => setCourier({...courier, vide: e.target.value})}
+                      value={courier.vibe} 
+                      onChange={e => setCourier({...courier, vibe: e.target.value})}
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
@@ -491,10 +455,10 @@ const [env, setEnv] = useState<Environment>(params.env);
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase text-[#8E9299]">Vide</Label>
+                    <Label className="text-[10px] uppercase text-[#8E9299]">Vibe</Label>
                     <Input 
-                      value={recipient.vide} 
-                      onChange={e => setRecipient({...recipient, vide: e.target.value})}
+                      value={recipient.vibe} 
+                      onChange={e => setRecipient({...recipient, vibe: e.target.value})}
                       className="bg-[#151619] border-[#FFFFFF10] focus:border-[#FF4444]"
                     />
                   </div>
