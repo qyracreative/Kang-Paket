@@ -41,7 +41,7 @@ interface Character {
   personality: string;
   traits: string;
   characteristic: string;
-  vide: string;
+  vibe: string;
   outfit: string;
   location?: string;
   vehicle?: string;
@@ -77,7 +77,7 @@ const DEFAULT_COURIER: Character = {
   personality: "",
   traits: "",
   characteristic: "",
-  vide: "",
+  vibe: "",
   outfit: "",
   vehicle: "",
 };
@@ -89,7 +89,7 @@ const DEFAULT_RECIPIENT: Character = {
   personality: "",
   traits: "",
   characteristic: "",
-  vide: "",
+  vibe: "",
   outfit: "",
   location: "",
   package: "",
@@ -114,7 +114,7 @@ const getParams = () => {
       personality: params.get("courier_personality") || "",
       traits: params.get("courier_traits") || "",
       characteristic: params.get("courier_characteristic") || "",
-      vide: params.get("courier_vide") || "",
+      vibe: params.get("courier_vide") || "",
       outfit: params.get("courier_outfit") || "",
       vehicle: params.get("courier_vehicle") || "",
     },
@@ -125,7 +125,7 @@ const getParams = () => {
       personality: params.get("recipient_personality") || "",
       traits: params.get("recipient_traits") || "",
       characteristic: params.get("recipient_characteristic") || "",
-      vide: params.get("recipient_vide") || "",
+      vibe: params.get("recipient_vide") || "",
       outfit: params.get("recipient_outfit") || "",
       location: params.get("recipient_location") || "",
       package: params.get("recipient_package") || "",
@@ -178,7 +178,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         - Personality: ${courier.personality}
         - Traits: ${courier.traits}
         - Characteristic: ${courier.characteristic}
-        - Vide: ${courier.vide}
+        - Vibe: ${courier.vide}
         - Outfit: ${courier.outfit}
         - Vehicle: ${courier.vehicle}
         
@@ -189,7 +189,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         - Personality: ${recipient.personality}
         - Traits: ${recipient.traits}
         - Characteristic: ${recipient.characteristic}
-        - Vide: ${recipient.vide}
+        - Vibe: ${recipient.vide}
         - Outfit: ${recipient.outfit}
         - Location: ${recipient.location}
         - Package: ${recipient.package}
