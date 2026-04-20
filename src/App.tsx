@@ -66,6 +66,8 @@ interface Scene {
 interface GeneratedPrompt {
   title: string;
   scenes: Scene[];
+  courierImagePrompt: string;
+  recipientImagePrompt: string;
 }
 
 // --- Constants ---
@@ -103,50 +105,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-// --- App Component ---
-
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
-
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -165,14 +128,15 @@ const [env, setEnv] = useState<Environment>(params.env);
       const ai = new GoogleGenAI({ apiKey });
       
       const prompt = `
-        Create a Veo prompt for a short cinematic story about a courier delivering a package to a recipient.
+        Create a cinematic storyboard and character visual prompts for a short story about a courier delivering a package to a recipient.
         The story consists of 6 connected scenes. Each scene is 8 seconds (48s total).
         
         MANDATORY REQUIREMENTS:
-        1. Character personality and voice must remain consistent across all scenes.
-        2. Each scene must have clear, non-ambiguous actions and transitions.
-        3. Include a scene where the recipient opens the package. The recipient reacts based on their personality, and the courier is affected by the reaction.
-        4. Write in English for descriptions, but ALL character dialogues MUST be in Indonesian.
+        1. Character consistency: Provide two detailed visual prompts at the beginning (one for the Courier, one for the Recipient) suitable for Image Generation models (like Gemini Flash Image). These prompts must describe their physical appearance, clothing, and overall vibe based on the provided details.
+        2. Dialogue: In the storyboard scenes, explicitly state who is speaking in the dialogue field (e.g., "Kiko: [Dialogue]"). 
+        3. Language: Write in English for all descriptions and prompts, but character dialogues MUST be in Indonesian.
+        4. Consistency: Character personality and voice must remain consistent across all scenes.
+        5. Scene content: Include a scene where the recipient opens the package. The recipient reacts based on their personality, and the courier is affected by the reaction.
         
         COURIER DETAILS:
         - Name: ${courier.name}
@@ -207,13 +171,15 @@ const [env, setEnv] = useState<Environment>(params.env);
         Return a JSON object with:
         {
           "title": "A catchy title for the story",
+          "courierImagePrompt": "A highly detailed image generation prompt for the Courier character",
+          "recipientImagePrompt": "A highly detailed image generation prompt for the Recipient character",
           "scenes": [
             {
               "sceneNumber": 1,
               "visualDescription": "...",
               "cameraMovement": "...",
               "sfx": "...",
-              "dialogue": "..."
+              "dialogue": "[Speaker Name]: [Dialogue in Indonesian]"
             },
             ... (6 scenes total)
           ]
@@ -229,6 +195,8 @@ const [env, setEnv] = useState<Environment>(params.env);
             type: Type.OBJECT,
             properties: {
               title: { type: Type.STRING },
+              courierImagePrompt: { type: Type.STRING },
+              recipientImagePrompt: { type: Type.STRING },
               scenes: {
                 type: Type.ARRAY,
                 items: {
@@ -244,7 +212,7 @@ const [env, setEnv] = useState<Environment>(params.env);
                 }
               }
             },
-            required: ["title", "scenes"]
+            required: ["title", "courierImagePrompt", "recipientImagePrompt", "scenes"]
           }
         }
       });
@@ -267,6 +235,11 @@ const [env, setEnv] = useState<Environment>(params.env);
     if (!generatedPrompt) return;
     
     let text = `Veo Cinematic Prompt: ${generatedPrompt.title}\n\n`;
+    
+    text += `CHARACTER VISUAL PROMPTS:\n`;
+    text += `Courier: ${generatedPrompt.courierImagePrompt}\n`;
+    text += `Recipient: ${generatedPrompt.recipientImagePrompt}\n\n`;
+    
     generatedPrompt.scenes.forEach(s => {
       text += `SCENE ${s.sceneNumber}\n`;
       text += `Visual: ${s.visualDescription}\n`;
@@ -669,6 +642,105 @@ const [env, setEnv] = useState<Environment>(params.env);
                     </div>
                   ) : (
                     <div className="space-y-8">
+                      {/* Character Consistency Section */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-[#1e293b] rounded-xl border border-blue-500/20 p-6 shadow-2xl relative overflow-hidden group"
+                      >
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                          <Sparkles className="w-20 h-20 text-blue-400" />
+                        </div>
+                        
+                        <div className="flex items-center gap-2 mb-6">
+                          <div className="p-2 bg-blue-500/20 rounded-lg border border-blue-500/30">
+                            <Sparkles className="w-5 h-5 text-blue-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-bold tracking-wider text-blue-100 uppercase">Character Consistency Prompts</h3>
+                            <p className="text-[10px] text-blue-400 font-mono">Nano Banana Image Generation</p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-6">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] uppercase font-mono text-blue-300 tracking-widest">Courier Design Prompt</span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (generatedPrompt) {
+                                    navigator.clipboard.writeText(generatedPrompt.courierImagePrompt);
+                                    setCopiedSceneIdx(-1);
+                                    setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                  }
+                                }}
+                                className="w-8 h-8 text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:text-white hover:bg-blue-500/30 hover:border-blue-500/40 transition-all active:scale-90"
+                              >
+                                {copiedSceneIdx === -1 ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                              </Button>
+                            </div>
+                            <div 
+                              onClick={() => {
+                                if (generatedPrompt) {
+                                  navigator.clipboard.writeText(generatedPrompt.courierImagePrompt);
+                                  setCopiedSceneIdx(-1);
+                                  setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                }
+                              }}
+                              className="bg-[#0f172a] p-4 rounded-lg border border-blue-500/10 text-sm italic text-blue-50/80 leading-relaxed cursor-pointer hover:border-blue-500/30 hover:bg-[#0f172a]/80 transition-all relative group/box"
+                            >
+                              {generatedPrompt.courierImagePrompt}
+                              {copiedSceneIdx === -1 && (
+                                <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded font-bold animate-in fade-in zoom-in">
+                                  COPIED
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] uppercase font-mono text-blue-300 tracking-widest">Recipient Design Prompt</span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (generatedPrompt) {
+                                    navigator.clipboard.writeText(generatedPrompt.recipientImagePrompt);
+                                    setCopiedSceneIdx(-2);
+                                    setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                  }
+                                }}
+                                className="w-8 h-8 text-blue-400 bg-blue-500/10 border border-blue-500/20 hover:text-white hover:bg-blue-500/30 hover:border-blue-500/40 transition-all active:scale-90"
+                              >
+                                {copiedSceneIdx === -2 ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                              </Button>
+                            </div>
+                            <div 
+                              onClick={() => {
+                                if (generatedPrompt) {
+                                  navigator.clipboard.writeText(generatedPrompt.recipientImagePrompt);
+                                  setCopiedSceneIdx(-2);
+                                  setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                }
+                              }}
+                              className="bg-[#0f172a] p-4 rounded-lg border border-blue-500/10 text-sm italic text-blue-50/80 leading-relaxed cursor-pointer hover:border-blue-500/30 hover:bg-[#0f172a]/80 transition-all relative group/box"
+                            >
+                              {generatedPrompt.recipientImagePrompt}
+                              {copiedSceneIdx === -2 && (
+                                <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded font-bold animate-in fade-in zoom-in">
+                                  COPIED
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+
                       {generatedPrompt?.scenes.map((scene, idx) => (
                         <motion.div 
                           key={idx}
