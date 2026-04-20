@@ -19,7 +19,8 @@ import {
   Volume2, 
   MessageSquare,
   Sparkles,
-  Package
+  Package,
+  Table
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -63,11 +64,22 @@ interface Scene {
   dialogue: string;
 }
 
+interface SocialPlatform {
+  title: string;
+  description: string;
+  hashtags: string[];
+}
+
 interface GeneratedPrompt {
   title: string;
   scenes: Scene[];
   courierImagePrompt: string;
   recipientImagePrompt: string;
+  socialMedia: {
+    facebook: SocialPlatform;
+    youtube: SocialPlatform;
+    tiktok: SocialPlatform;
+  };
 }
 
 // --- Constants ---
@@ -105,47 +117,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -174,6 +150,19 @@ const [env, setEnv] = useState<Environment>(params.env);
         4. Consistency: Character personality and voice must remain consistent across all scenes.
         5. Scene content: Include a scene where the recipient opens the package. The recipient reacts based on their personality, and the courier is affected by the reaction.
         
+        SOCIAL MEDIA PROMOTION REQUIREMENTS:
+        Based on the generated cinematic storyboard, create social media promotional content for the following platforms:
+        - FACEBOOK REELS: Style: Emotional, relatable, encourages comments. Fields: Viral emotional title, short engaging description, 3-5 hashtags.
+        - YOUTUBE SHORTS: Style: Searchable, curiosity-driven, optimized for Shorts discovery. Fields: SEO-friendly title, short searchable description, 3-4 hashtags.
+        - TIKTOK: Style: Casual, emotional, curiosity-driven, optimized for FYP. Fields: Hook-based short title, engaging short description, 4-5 hashtags.
+        
+        RULES:
+        - Keep platform outputs different in wording.
+        - Match all outputs to the cinematic mood of the storyboard.
+        - Make titles catchy but natural.
+        - Do not repeat the same hashtags for every platform.
+        - Ensure outputs are ready to copy-paste.
+
         COURIER DETAILS:
         - Name: ${courier.name}
         - Type: ${courier.type}
@@ -209,6 +198,11 @@ const [env, setEnv] = useState<Environment>(params.env);
           "title": "A catchy title for the story",
           "courierImagePrompt": "A highly detailed image generation prompt for the Courier character",
           "recipientImagePrompt": "A highly detailed image generation prompt for the Recipient character",
+          "socialMedia": {
+            "facebook": { "title": "...", "description": "...", "hashtags": ["#tag1", "#tag2", ...] },
+            "youtube": { "title": "...", "description": "...", "hashtags": ["#tag1", "#tag2", ...] },
+            "tiktok": { "title": "...", "description": "...", "hashtags": ["#tag1", "#tag2", ...] }
+          },
           "scenes": [
             {
               "sceneNumber": 1,
@@ -233,6 +227,39 @@ const [env, setEnv] = useState<Environment>(params.env);
               title: { type: Type.STRING },
               courierImagePrompt: { type: Type.STRING },
               recipientImagePrompt: { type: Type.STRING },
+              socialMedia: {
+                type: Type.OBJECT,
+                properties: {
+                  facebook: {
+                    type: Type.OBJECT,
+                    properties: {
+                      title: { type: Type.STRING },
+                      description: { type: Type.STRING },
+                      hashtags: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    },
+                    required: ["title", "description", "hashtags"]
+                  },
+                  youtube: {
+                    type: Type.OBJECT,
+                    properties: {
+                      title: { type: Type.STRING },
+                      description: { type: Type.STRING },
+                      hashtags: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    },
+                    required: ["title", "description", "hashtags"]
+                  },
+                  tiktok: {
+                    type: Type.OBJECT,
+                    properties: {
+                      title: { type: Type.STRING },
+                      description: { type: Type.STRING },
+                      hashtags: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    },
+                    required: ["title", "description", "hashtags"]
+                  }
+                },
+                required: ["facebook", "youtube", "tiktok"]
+              },
               scenes: {
                 type: Type.ARRAY,
                 items: {
@@ -248,7 +275,7 @@ const [env, setEnv] = useState<Environment>(params.env);
                 }
               }
             },
-            required: ["title", "courierImagePrompt", "recipientImagePrompt", "scenes"]
+            required: ["title", "courierImagePrompt", "recipientImagePrompt", "socialMedia", "scenes"]
           }
         }
       });
@@ -275,6 +302,11 @@ const [env, setEnv] = useState<Environment>(params.env);
     text += `CHARACTER VISUAL PROMPTS:\n`;
     text += `Courier: ${generatedPrompt.courierImagePrompt}\n`;
     text += `Recipient: ${generatedPrompt.recipientImagePrompt}\n\n`;
+
+    text += `SOCIAL MEDIA PROMOTION:\n`;
+    text += `[FACEBOOK]\nTitle: ${generatedPrompt.socialMedia.facebook.title}\nDescription: ${generatedPrompt.socialMedia.facebook.description}\nHashtags: ${generatedPrompt.socialMedia.facebook.hashtags.join(' ')}\n\n`;
+    text += `[YOUTUBE]\nTitle: ${generatedPrompt.socialMedia.youtube.title}\nDescription: ${generatedPrompt.socialMedia.youtube.description}\nHashtags: ${generatedPrompt.socialMedia.youtube.hashtags.join(' ')}\n\n`;
+    text += `[TIKTOK]\nTitle: ${generatedPrompt.socialMedia.tiktok.title}\nDescription: ${generatedPrompt.socialMedia.tiktok.description}\nHashtags: ${generatedPrompt.socialMedia.tiktok.hashtags.join(' ')}\n\n`;
     
     generatedPrompt.scenes.forEach(s => {
       text += `SCENE ${s.sceneNumber}\n`;
@@ -847,6 +879,90 @@ const [env, setEnv] = useState<Environment>(params.env);
                           </div>
                         </motion.div>
                       ))}
+
+                      {/* Social Media Section */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-[#3b0764] rounded-xl border border-purple-500/20 p-6 shadow-2xl relative overflow-hidden group"
+                      >
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                          <Send className="w-20 h-20 text-purple-400" />
+                        </div>
+                        
+                        <div className="flex items-center gap-2 mb-6">
+                          <div className="p-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
+                            <Send className="w-5 h-5 text-purple-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-bold tracking-wider text-purple-100 uppercase">Social Media Promotion</h3>
+                            <p className="text-[10px] text-purple-400 font-mono">Platform Optimized Content</p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-6">
+                          {[
+                            { id: 'facebook', label: 'Facebook Reels', data: generatedPrompt.socialMedia.facebook, bg: 'bg-[#0f172a]' },
+                            { id: 'youtube', label: 'YouTube Shorts', data: generatedPrompt.socialMedia.youtube, bg: 'bg-[#1e1b4b]' },
+                            { id: 'tiktok', label: 'TikTok', data: generatedPrompt.socialMedia.tiktok, bg: 'bg-[#000000]' }
+                          ].map((plat, idx) => (
+                            <div key={plat.id} className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase font-mono text-purple-300 tracking-widest">{plat.label}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => {
+                                    const sheetText = `${plat.data.title}\t${plat.data.description}\t${plat.data.hashtags.join(' ')}`;
+                                    navigator.clipboard.writeText(sheetText);
+                                    setCopiedSceneIdx(-3 - idx);
+                                    setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                  }}
+                                  className="w-8 h-8 text-purple-400 hover:text-white hover:bg-purple-500/20 transition-all active:scale-90"
+                                  title="Copy Row for Spreadsheet (Tab Separated)"
+                                >
+                                  {copiedSceneIdx === (-3 - idx) ? <Check className="w-4 h-4 text-green-500" /> : <Table className="w-4 h-4" />}
+                                </Button>
+                              </div>
+                              <div 
+                                onClick={() => {
+                                  const sheetText = `${plat.data.title}\t${plat.data.description}\t${plat.data.hashtags.join(' ')}`;
+                                  navigator.clipboard.writeText(sheetText);
+                                  setCopiedSceneIdx(-3 - idx);
+                                  setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                }}
+                                className={`${plat.bg} p-4 rounded-lg border border-purple-500/10 text-sm cursor-pointer hover:border-purple-500/30 transition-all relative group/box`}
+                              >
+                                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                                  <div className="md:col-span-3 space-y-1">
+                                    <span className="text-[10px] text-purple-400 font-mono block">TITLE</span>
+                                    <p className="font-bold text-white text-sm">{plat.data.title}</p>
+                                  </div>
+                                  <div className="md:col-span-6 space-y-1">
+                                    <span className="text-[10px] text-purple-400 font-mono block">DESCRIPTION</span>
+                                    <p className="text-[#E0E0E0] text-[11px] leading-relaxed line-clamp-4 group-hover/box:line-clamp-none transition-all">{plat.data.description}</p>
+                                  </div>
+                                  <div className="md:col-span-3 space-y-1">
+                                    <span className="text-[10px] text-purple-400 font-mono block">HASHTAGS</span>
+                                    <div className="flex flex-wrap gap-1">
+                                      {plat.data.hashtags.map(h => (
+                                        <span key={h} className="text-[10px] font-mono text-purple-300">
+                                          {h}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                                {copiedSceneIdx === (-3 - idx) && (
+                                  <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded font-bold animate-in fade-in zoom-in">
+                                    COPIED
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
                     </div>
                   )}
                 </AnimatePresence>
