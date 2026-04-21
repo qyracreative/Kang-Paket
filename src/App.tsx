@@ -117,47 +117,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -180,11 +144,19 @@ const [env, setEnv] = useState<Environment>(params.env);
         The story consists of 6 connected scenes. Each scene is 8 seconds (48s total).
         
         MANDATORY REQUIREMENTS:
-        1. Character consistency: Provide two detailed visual prompts at the beginning (one for the Courier, one for the Recipient) suitable for Image Generation models (like Gemini Flash Image). These prompts must describe their physical appearance, clothing, and overall vibe based on the provided details.
-        2. Dialogue: In the storyboard scenes, explicitly state who is speaking in the dialogue field (e.g., "Kiko: [Dialogue]"). 
-        3. Language: Write in English for all descriptions and prompts, but character dialogues MUST be in Indonesian.
-        4. Consistency: Character personality and voice must remain consistent across all scenes.
-        5. Scene content: Include a scene where the recipient opens the package. The recipient reacts based on their personality, and the courier is affected by the reaction.
+        1. Character consistency: Provide two detailed visual prompts at the beginning (one for the Courier, one for the Recipient). These prompts must describe their physical appearance, clothing, and overall vibe.
+        2. Dialogue: explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian.
+        3. Language: English for all descriptions and prompts.
+        4. Consistency: Character personality and voice must remain consistent.
+        5. Scene content: Include a scene where the recipient opens the package and reacts.
+        
+        STORYBOARD SCENE GUIDELINES (ULTRA-DETAILED):
+        Each "visualDescription" must be a professional-grade prompt for a cinematic AI video model (like Veo). Do not be ambiguous. Include:
+        - Precise Lighting: (e.g., volumetric lighting, cinematic teal and orange, soft moonlight, harsh neon shadows, golden hour glow).
+        - Texture & Environment: (e.g., dust motes dancing in light, raindrops on a windshield, the detailed texture of the courier's jacket, the specific architectural style of the location).
+        - Character Detail: Reference the specific traits from the CHARACTER VISUAL PROMPTS. Mention micro-expressions, sweat, or specific body language.
+        - Cinematic Composition: Describe the shot like a director (e.g., tight macro shot of an eye, low-angle tracking shot, wide panoramic view with high contrast).
+        - Atmosphere: Describe the "feel" (e.g., gritty, ethereal, nostalgic, high-stakes).
         
         SOCIAL MEDIA PROMOTION REQUIREMENTS:
         Based on the generated cinematic storyboard, create social media promotional content for the following platforms:
