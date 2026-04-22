@@ -117,47 +117,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -182,7 +146,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         MANDATORY REQUIREMENTS:
         1. Character consistency: Provide two detailed visual prompts at the beginning (one for the Courier, one for the Recipient). These prompts must describe their physical appearance, clothing, and overall vibe.
         2. Dialogue: explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian.
-        3. Language: English for all descriptions and prompts.
+        3. Language: Use English ONLY for "visualDescription", "courierImagePrompt", and "recipientImagePrompt". Everything else (Story Title, Social Media Titles, Social Media Descriptions, and Dialogues) MUST be in Indonesian.
         4. Consistency: Character personality and voice must remain consistent.
         5. Scene content: Include a scene where the recipient opens the package and reacts.
         
@@ -201,6 +165,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         - TIKTOK: Style: Casual, emotional, curiosity-driven, optimized for FYP. Fields: Hook-based short title, engaging short description, 4-5 hashtags.
         
         RULES:
+        - All social media titles and descriptions MUST be in Indonesian.
         - Keep platform outputs different in wording.
         - Match all outputs to the cinematic mood of the storyboard.
         - Make titles catchy but natural.
@@ -934,14 +899,58 @@ const [env, setEnv] = useState<Environment>(params.env);
                           <Send className="w-20 h-20 text-purple-400" />
                         </div>
                         
-                        <div className="flex items-center gap-2 mb-6">
-                          <div className="p-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
-                            <Send className="w-5 h-5 text-purple-400" />
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center gap-2">
+                            <div className="p-2 bg-purple-500/20 rounded-lg border border-purple-500/30">
+                              <Send className="w-5 h-5 text-purple-400" />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-bold tracking-wider text-purple-100 uppercase">Social Media Promotion</h3>
+                              <p className="text-[10px] text-purple-400 font-mono">Platform Optimized Content</p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="text-sm font-bold tracking-wider text-purple-100 uppercase">Social Media Promotion</h3>
-                            <p className="text-[10px] text-purple-400 font-mono">Platform Optimized Content</p>
-                          </div>
+                          
+                          <Button 
+                            variant="default" 
+                            size="sm"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (generatedPrompt) {
+                                try {
+                                  // Individual components for the single row
+                                  const fb = `${generatedPrompt.socialMedia.facebook.title}\t${generatedPrompt.socialMedia.facebook.description}\t${generatedPrompt.socialMedia.facebook.hashtags.join(' ')}`;
+                                  const yt = `${generatedPrompt.socialMedia.youtube.title}\t${generatedPrompt.socialMedia.youtube.description}\t${generatedPrompt.socialMedia.youtube.hashtags.join(' ')}`;
+                                  const tt = `${generatedPrompt.socialMedia.tiktok.title}\t${generatedPrompt.socialMedia.tiktok.description}\t${generatedPrompt.socialMedia.tiktok.hashtags.join(' ')}`;
+                                  
+                                  // Join all with tabs to create one continuous row: AH, AI, AJ, AK, AL, AM, AN, AO, AP
+                                  const singleRowData = `${fb}\t${yt}\t${tt}`;
+                                  
+                                  await navigator.clipboard.writeText(singleRowData);
+                                  setCopiedSceneIdx(-6);
+                                  setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                } catch (err) {
+                                  console.error("Copy failed", err);
+                                  const textArea = document.createElement("textarea");
+                                  const fb = `${generatedPrompt.socialMedia.facebook.title}\t${generatedPrompt.socialMedia.facebook.description}\t${generatedPrompt.socialMedia.facebook.hashtags.join(' ')}`;
+                                  const yt = `${generatedPrompt.socialMedia.youtube.title}\t${generatedPrompt.socialMedia.youtube.description}\t${generatedPrompt.socialMedia.youtube.hashtags.join(' ')}`;
+                                  const tt = `${generatedPrompt.socialMedia.tiktok.title}\t${generatedPrompt.socialMedia.tiktok.description}\t${generatedPrompt.socialMedia.tiktok.hashtags.join(' ')}`;
+                                  textArea.value = `${fb}\t${yt}\t${tt}`;
+                                  document.body.appendChild(textArea);
+                                  textArea.select();
+                                  try {
+                                    document.execCommand('copy');
+                                    setCopiedSceneIdx(-6);
+                                    setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                  } catch (e2) {}
+                                  document.body.removeChild(textArea);
+                                }
+                              }
+                            }}
+                            className="bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-900/20 transition-all gap-2 px-4 h-9 font-bold relative overflow-hidden group/btn"
+                          >
+                            {copiedSceneIdx === -6 ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                            <span className="text-[10px] uppercase font-bold tracking-wider">Copy All</span>
+                          </Button>
                         </div>
 
                         <div className="space-y-6">
