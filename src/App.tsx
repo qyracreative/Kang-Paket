@@ -20,7 +20,8 @@ import {
   MessageSquare,
   Sparkles,
   Package,
-  Table
+  Table,
+  BookOpen
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ interface SocialPlatform {
 
 interface GeneratedPrompt {
   title: string;
+  storyOverview: string;
   scenes: Scene[];
   courierImagePrompt: string;
   recipientImagePrompt: string;
@@ -117,47 +119,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -181,18 +147,21 @@ const [env, setEnv] = useState<Environment>(params.env);
         
         MANDATORY REQUIREMENTS:
         1. Character consistency: Provide two detailed visual prompts at the beginning (one for the Courier, one for the Recipient). These prompts must describe their physical appearance, clothing, and overall vibe.
-        2. Dialogue: explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian.
+        2. Dialogue Accuracy & Persona: explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian. The Courier must sound like a courier, and the Recipient must sound like the person described in RECIPIENT DETAILS. DO NOT mix up who is speaking.
         3. Language: Use English ONLY for "visualDescription", "courierImagePrompt", and "recipientImagePrompt". Everything else (Story Title, Social Media Titles, Social Media Descriptions, and Dialogues) MUST be in Indonesian.
-        4. Consistency: Character personality and voice must remain consistent.
-        5. Scene content: Include a scene where the recipient opens the package and reacts.
+        4. Narrative Cohesion: The 6 scenes must form a continuous, logical story arc (Scene 1: Intro/Start -> Scene 2: Detailed Journey -> Scene 3: Arrival at Location -> Scene 4: Package Handover/Interaction -> Scene 5: Recipient opening ${recipient.package} -> Scene 6: Resolution/Reaction).
+        5. Seamless Transitions: Describe the background changing logically. If moving from a vehicle to a porch, show the vehicle coming to a stop and the courier stepping out. No sudden teleportations.
+        6. Consistent Package: The package being delivered must be ${recipient.package}. Its appearance must be described consistently in the visual prompts.
         
-        STORYBOARD SCENE GUIDELINES (ULTRA-DETAILED):
-        Each "visualDescription" must be a professional-grade prompt for a cinematic AI video model (like Veo). Do not be ambiguous. Include:
+        STORYBOARD SCENE GUIDELINES (ULTRA-DETAILED & NON-AMBIGUOUS):
+        Each "visualDescription" must be a professional-grade prompt for a cinematic AI video model (like Veo). NO AMBIGUITY. Include:
         - Precise Lighting: (e.g., volumetric lighting, cinematic teal and orange, soft moonlight, harsh neon shadows, golden hour glow).
         - Texture & Environment: (e.g., dust motes dancing in light, raindrops on a windshield, the detailed texture of the courier's jacket, the specific architectural style of the location).
-        - Character Detail: Reference the specific traits from the CHARACTER VISUAL PROMPTS. Mention micro-expressions, sweat, or specific body language.
+        - Character Detail: Reference the specific name and appearance from the CHARACTER VISUAL PROMPTS. Mention micro-expressions, sweat, or specific body language.
         - Cinematic Composition: Describe the shot like a director (e.g., tight macro shot of an eye, low-angle tracking shot, wide panoramic view with high contrast).
         - Atmosphere: Describe the "feel" (e.g., gritty, ethereal, nostalgic, high-stakes).
+        - Direct Connection: Each scene must logically follow the previous one's physical setup.
+        - Continuity: Ensure objects (like the package) look the same across all scenes.
         
         SOCIAL MEDIA PROMOTION REQUIREMENTS:
         Based on the generated cinematic storyboard, create social media promotional content for the following platforms:
@@ -241,6 +210,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         Return a JSON object with:
         {
           "title": "A catchy title for the story",
+          "storyOverview": "A brief overview or storytelling summary of the entire story in Indonesian. This provides the 'red thread' (benang merah) that connects all scenes.",
           "courierImagePrompt": "A highly detailed image generation prompt for the Courier character",
           "recipientImagePrompt": "A highly detailed image generation prompt for the Recipient character",
           "socialMedia": {
@@ -270,6 +240,7 @@ const [env, setEnv] = useState<Environment>(params.env);
             type: Type.OBJECT,
             properties: {
               title: { type: Type.STRING },
+              storyOverview: { type: Type.STRING },
               courierImagePrompt: { type: Type.STRING },
               recipientImagePrompt: { type: Type.STRING },
               socialMedia: {
@@ -851,6 +822,65 @@ const [env, setEnv] = useState<Environment>(params.env);
                               )}
                             </div>
                           </div>
+                        </div>
+                      </motion.div>
+                      
+                      {/* Story Overview / Benang Merah Section */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-[#0f172a] rounded-xl border border-teal-500/20 p-6 shadow-2xl relative group z-10"
+                      >
+                        <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                          <BookOpen className="w-16 h-16 text-teal-400" />
+                        </div>
+                        
+                        <div className="flex items-center justify-between mb-4 relative z-20">
+                          <div className="flex items-center gap-2">
+                            <div className="p-2 bg-teal-500/20 rounded-lg border border-teal-500/30">
+                              <BookOpen className="w-5 h-5 text-teal-400" />
+                            </div>
+                            <div>
+                              <h3 className="text-sm font-bold tracking-wider text-teal-100 uppercase">Story Overview</h3>
+                              <p className="text-[10px] text-teal-400 font-mono tracking-tighter italic">"Benang Merah Cerita"</p>
+                            </div>
+                          </div>
+                          
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={async () => {
+                              if (generatedPrompt) {
+                                try {
+                                  await navigator.clipboard.writeText(generatedPrompt.storyOverview);
+                                  setCopiedSceneIdx(-10);
+                                  setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                } catch (err) {
+                                  // Fallback for restricted environments
+                                  const textArea = document.createElement("textarea");
+                                  textArea.value = generatedPrompt.storyOverview;
+                                  document.body.appendChild(textArea);
+                                  textArea.select();
+                                  try {
+                                    document.execCommand('copy');
+                                    setCopiedSceneIdx(-10);
+                                    setTimeout(() => setCopiedSceneIdx(null), 2000);
+                                  } catch (e2) {}
+                                  document.body.removeChild(textArea);
+                                }
+                              }
+                            }}
+                            className="w-8 h-8 text-teal-400 hover:text-white hover:bg-teal-500/20"
+                          >
+                            {copiedSceneIdx === -10 ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                          </Button>
+                        </div>
+                        
+                        <div className="relative group/text">
+                          <div className="absolute -left-3 top-0 h-full w-1 bg-gradient-to-b from-teal-500/50 to-transparent rounded-full opacity-0 group-hover/text:opacity-100 transition-opacity" />
+                          <p className="text-sm text-teal-50/90 leading-relaxed font-serif italic">
+                            {generatedPrompt.storyOverview}
+                          </p>
                         </div>
                       </motion.div>
 
