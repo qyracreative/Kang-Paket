@@ -119,47 +119,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -193,24 +157,27 @@ const [env, setEnv] = useState<Environment>(params.env);
         Each "visualDescription" must be a professional-grade prompt for a cinematic AI video model (like Veo). NO AMBIGUITY. Include:
         - Precise Lighting: (e.g., volumetric lighting, cinematic teal and orange, soft moonlight, harsh neon shadows, golden hour glow).
         - Texture & Environment: (e.g., dust motes dancing in light, raindrops on a windshield, the detailed texture of the courier's jacket, the specific architectural style of the location).
-        - Character Detail: Reference the specific name and appearance from the CHARACTER VISUAL PROMPTS. Mention micro-expressions, sweat, or specific body language.
+        - Mandatory Character Detail Inclusion: In EVERY scene where a character appears, you MUST refer to them by name and immediately follow it with their full visual description (physique, facial features, age, attire, specific equipment like helmet) derived from the CHARACTER VISUAL PROMPTS. This ensures visual consistency across all frames.
         - Cinematic Composition: Describe the shot like a director (e.g., tight macro shot of an eye, low-angle tracking shot, wide panoramic view with high contrast).
         - Atmosphere: Describe the "feel" (e.g., gritty, ethereal, nostalgic, high-stakes).
         - Direct Connection: Each scene must logically follow the previous one's physical setup.
         - Continuity: Ensure objects (like the package) look the same across all scenes.
         
         SOCIAL MEDIA PROMOTION REQUIREMENTS:
-        Based on the generated cinematic storyboard, create social media promotional content for the following platforms:
-        - FACEBOOK REELS: Style: Emotional, relatable, encourages comments. Fields: Viral emotional title, short engaging description, 3-5 hashtags.
-        - YOUTUBE SHORTS: Style: Searchable, curiosity-driven, optimized for Shorts discovery. Fields: SEO-friendly title, short searchable description, 3-4 hashtags.
-        - TIKTOK: Style: Casual, emotional, curiosity-driven, optimized for FYP. Fields: Hook-based short title, engaging short description, 4-5 hashtags.
+        Based on the generated cinematic storyboard, create social media promotional content for the following platforms using VIRAL STRATEGIES:
+        - FACEBOOK REELS: Style: High-Emotion & Relatable. Use psychological hooks like "Gak nyangka banget!", "Pelajaran buat kita semua...", or "Misteri terungkap!". Fields: Viral emotional title, short engaging description, 3-5 hashtags.
+        - YOUTUBE SHORTS: Style: Mystery & High-Retention. Use click-driven titles, curiosity gaps, and keywords that trigger the "Must Watch" feeling. Fields: SEO-friendly viral title, short searchable description, 3-4 hashtags.
+        - TIKTOK: Style: POV & Trend-Focused. Use high-impact hooks, "POV" style language, and emotional cliffhangers. Fields: Hook-based viral title, engaging short description, 4-5 hashtags.
         
         RULES:
-        - All social media titles and descriptions MUST be in Indonesian.
+        - All social media titles and descriptions MUST be in Indonesian and use viral keywords.
+        - Strategic Framing: Use words that trigger curiosity, emotion, or shock (e.g., "Terbongkar", "Detik-detik", "Bikin Merinding", "Kisah Nyata").
         - Keep platform outputs different in wording.
         - Match all outputs to the cinematic mood of the storyboard.
-        - Make titles catchy but natural.
+        - Make titles catchy, spicy, and optimize for high click-through rate (CTR).
         - Do not repeat the same hashtags for every platform.
+        - YouTube Shorts hashtags MUST NOT include the '#' symbol and will be joined by commas in the final output.
+        - Facebook Reels and TikTok hashtags MUST include the '#' symbol (e.g., #Viral, #Story).
         - Ensure outputs are ready to copy-paste.
 
         COURIER DETAILS:
@@ -250,9 +217,9 @@ const [env, setEnv] = useState<Environment>(params.env);
           "courierImagePrompt": "A highly detailed image generation prompt for the Courier character",
           "recipientImagePrompt": "A highly detailed image generation prompt for the Recipient character",
           "socialMedia": {
-            "facebook": { "title": "...", "description": "...", "hashtags": ["#tag1", "#tag2", ...] },
-            "youtube": { "title": "...", "description": "...", "hashtags": ["#tag1", "#tag2", ...] },
-            "tiktok": { "title": "...", "description": "...", "hashtags": ["#tag1", "#tag2", ...] }
+            "facebook": { "title": "...", "description": "...", "hashtags": ["#Tag1", "#Tag2", ...] },
+            "youtube": { "title": "...", "description": "...", "hashtags": ["Tag1", "Tag2", ...] },
+            "tiktok": { "title": "...", "description": "...", "hashtags": ["#Tag1", "#Tag2", ...] }
           },
           "scenes": [
             {
@@ -355,11 +322,9 @@ const [env, setEnv] = useState<Environment>(params.env);
     text += `Courier: ${generatedPrompt.courierImagePrompt}\n`;
     text += `Recipient: ${generatedPrompt.recipientImagePrompt}\n\n`;
 
-    text += `SOCIAL MEDIA PROMOTION:\n`;
-    text += `[FACEBOOK]\nTitle: ${generatedPrompt.socialMedia.facebook.title}\nDescription: ${generatedPrompt.socialMedia.facebook.description}\nHashtags: ${generatedPrompt.socialMedia.facebook.hashtags.join(' ')}\n\n`;
-    text += `[YOUTUBE]\nTitle: ${generatedPrompt.socialMedia.youtube.title}\nDescription: ${generatedPrompt.socialMedia.youtube.description}\nHashtags: ${generatedPrompt.socialMedia.youtube.hashtags.join(' ')}\n\n`;
-    text += `[TIKTOK]\nTitle: ${generatedPrompt.socialMedia.tiktok.title}\nDescription: ${generatedPrompt.socialMedia.tiktok.description}\nHashtags: ${generatedPrompt.socialMedia.tiktok.hashtags.join(' ')}\n\n`;
-    
+    text += `STORY OVERVIEW (BENANG MERAH):\n`;
+    text += `${generatedPrompt.storyOverview}\n\n`;
+
     generatedPrompt.scenes.forEach(s => {
       text += `SCENE ${s.sceneNumber}\n`;
       text += `Visual: ${s.visualDescription}\n`;
@@ -1020,23 +985,37 @@ const [env, setEnv] = useState<Environment>(params.env);
                               if (generatedPrompt) {
                                 try {
                                   // Individual components for the single row
-                                  const fb = `${generatedPrompt.socialMedia.facebook.title}\t${generatedPrompt.socialMedia.facebook.description}\t${generatedPrompt.socialMedia.facebook.hashtags.join(' ')}`;
-                                  const yt = `${generatedPrompt.socialMedia.youtube.title}\t${generatedPrompt.socialMedia.youtube.description}\t${generatedPrompt.socialMedia.youtube.hashtags.join(' ')}`;
-                                  const tt = `${generatedPrompt.socialMedia.tiktok.title}\t${generatedPrompt.socialMedia.tiktok.description}\t${generatedPrompt.socialMedia.tiktok.hashtags.join(' ')}`;
+                                  // FB: One column (AH), then two empty columns (AI, AJ)
+                                  const fbHashtags = generatedPrompt.socialMedia.facebook.hashtags.map(h => h.startsWith('#') ? h : '#' + h).join(' ');
+                                  const fbContent = `"${generatedPrompt.socialMedia.facebook.title}\n\n${generatedPrompt.socialMedia.facebook.description}\n\n${fbHashtags}"`;
+                                  const fb = `${fbContent}\t\t`;
+                                  const ytHashtags = generatedPrompt.socialMedia.youtube.hashtags.map(h => h.replace(/^#/, '')).join(',');
+                                  const yt = `${generatedPrompt.socialMedia.youtube.title}\t${generatedPrompt.socialMedia.youtube.description}\t${ytHashtags}`;
                                   
-                                  // Join all with tabs to create one continuous row: AH, AI, AJ, AK, AL, AM, AN, AO, AP
+                                  const ttHashtags = generatedPrompt.socialMedia.tiktok.hashtags.map(h => h.startsWith('#') ? h : '#' + h).join(' ');
+                                  const ttContent = `"${generatedPrompt.socialMedia.tiktok.title}\n\n${generatedPrompt.socialMedia.tiktok.description}\n\n${ttHashtags}"`;
+                                  const tt = `${ttContent}\t\t`; 
+                                  
+                                  // Join all with tabs
                                   const singleRowData = `${fb}\t${yt}\t${tt}`;
                                   
                                   await navigator.clipboard.writeText(singleRowData);
                                   setCopiedSceneIdx(-6);
                                   setTimeout(() => setCopiedSceneIdx(null), 2000);
-                                } catch (err) {
-                                  console.error("Copy failed", err);
-                                  const textArea = document.createElement("textarea");
-                                  const fb = `${generatedPrompt.socialMedia.facebook.title}\t${generatedPrompt.socialMedia.facebook.description}\t${generatedPrompt.socialMedia.facebook.hashtags.join(' ')}`;
-                                  const yt = `${generatedPrompt.socialMedia.youtube.title}\t${generatedPrompt.socialMedia.youtube.description}\t${generatedPrompt.socialMedia.youtube.hashtags.join(' ')}`;
-                                  const tt = `${generatedPrompt.socialMedia.tiktok.title}\t${generatedPrompt.socialMedia.tiktok.description}\t${generatedPrompt.socialMedia.tiktok.hashtags.join(' ')}`;
-                                  textArea.value = `${fb}\t${yt}\t${tt}`;
+                                  } catch (err) {
+                                    console.error("Copy failed", err);
+                                    const textArea = document.createElement("textarea");
+                                    const fbHashtags = generatedPrompt.socialMedia.facebook.hashtags.map(h => h.startsWith('#') ? h : '#' + h).join(' ');
+                                    const fbContent = `"${generatedPrompt.socialMedia.facebook.title}\n\n${generatedPrompt.socialMedia.facebook.description}\n\n${fbHashtags}"`;
+                                    const fb = `${fbContent}\t\t`;
+                                    const ytHashtags = generatedPrompt.socialMedia.youtube.hashtags.map(h => h.replace(/^#/, '')).join(',');
+                                    const yt = `${generatedPrompt.socialMedia.youtube.title}\t${generatedPrompt.socialMedia.youtube.description}\t${ytHashtags}`;
+                                    
+                                    const ttHashtags = generatedPrompt.socialMedia.tiktok.hashtags.map(h => h.startsWith('#') ? h : '#' + h).join(' ');
+                                    const ttContent = `"${generatedPrompt.socialMedia.tiktok.title}\n\n${generatedPrompt.socialMedia.tiktok.description}\n\n${ttHashtags}"`;
+                                    const tt = `${ttContent}\t\t`;
+                                    
+                                    textArea.value = `${fb}\t${yt}\t${tt}`;
                                   document.body.appendChild(textArea);
                                   textArea.select();
                                   try {
@@ -1068,7 +1047,19 @@ const [env, setEnv] = useState<Environment>(params.env);
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => {
-                                    const sheetText = `${plat.data.title}\t${plat.data.description}\t${plat.data.hashtags.join(' ')}`;
+                                    const hashtagSeparator = plat.id === 'youtube' ? ',' : ' ';
+                                    const cleanedHashtags = plat.data.hashtags.map(h => {
+                                      if (plat.id === 'youtube') return h.replace(/^#/, '');
+                                      return h.startsWith('#') ? h : '#' + h;
+                                    }).join(hashtagSeparator);
+                                    
+                                    let sheetText;
+                                    if (plat.id === 'facebook' || plat.id === 'tiktok') {
+                                      sheetText = `"${plat.data.title}\n\n${plat.data.description}\n\n${cleanedHashtags}"`;
+                                    } else {
+                                      sheetText = `${plat.data.title}\t${plat.data.description}\t${cleanedHashtags}`;
+                                    }
+                                    
                                     navigator.clipboard.writeText(sheetText);
                                     setCopiedSceneIdx(-3 - idx);
                                     setTimeout(() => setCopiedSceneIdx(null), 2000);
@@ -1081,33 +1072,65 @@ const [env, setEnv] = useState<Environment>(params.env);
                               </div>
                               <div 
                                 onClick={() => {
-                                  const sheetText = `${plat.data.title}\t${plat.data.description}\t${plat.data.hashtags.join(' ')}`;
+                                  const hashtagSeparator = plat.id === 'youtube' ? ',' : ' ';
+                                  const cleanedHashtags = plat.data.hashtags.map(h => {
+                                    if (plat.id === 'youtube') return h.replace(/^#/, '');
+                                    return h.startsWith('#') ? h : '#' + h;
+                                  }).join(hashtagSeparator);
+                                  
+                                  let sheetText;
+                                  if (plat.id === 'facebook' || plat.id === 'tiktok') {
+                                    sheetText = `"${plat.data.title}\n\n${plat.data.description}\n\n${cleanedHashtags}"`;
+                                  } else {
+                                    sheetText = `${plat.data.title}\t${plat.data.description}\t${cleanedHashtags}`;
+                                  }
+                                  
                                   navigator.clipboard.writeText(sheetText);
                                   setCopiedSceneIdx(-3 - idx);
                                   setTimeout(() => setCopiedSceneIdx(null), 2000);
                                 }}
                                 className={`${plat.bg} p-4 rounded-lg border border-purple-500/10 text-sm cursor-pointer hover:border-purple-500/30 transition-all relative group/box`}
                               >
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                                  <div className="md:col-span-3 space-y-1">
-                                    <span className="text-[10px] text-purple-400 font-mono block">TITLE</span>
-                                    <p className="font-bold text-white text-sm">{plat.data.title}</p>
-                                  </div>
-                                  <div className="md:col-span-6 space-y-1">
-                                    <span className="text-[10px] text-purple-400 font-mono block">DESCRIPTION</span>
-                                    <p className="text-[#E0E0E0] text-[11px] leading-relaxed line-clamp-4 group-hover/box:line-clamp-none transition-all">{plat.data.description}</p>
-                                  </div>
-                                  <div className="md:col-span-3 space-y-1">
-                                    <span className="text-[10px] text-purple-400 font-mono block">HASHTAGS</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {plat.data.hashtags.map(h => (
-                                        <span key={h} className="text-[10px] font-mono text-purple-300">
-                                          {h}
-                                        </span>
-                                      ))}
+                                {plat.id === 'facebook' || plat.id === 'tiktok' ? (
+                                  <div className="space-y-4">
+                                    <div className="space-y-1">
+                                      <p className="font-bold text-white text-base">{plat.data.title}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[#E0E0E0] text-sm leading-relaxed">{plat.data.description}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <div className="flex flex-wrap gap-2">
+                                        {plat.data.hashtags.map(h => (
+                                          <span key={h} className="text-sm font-mono text-purple-300">
+                                            {h.startsWith('#') ? h : '#' + h}
+                                          </span>
+                                        ))}
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
+                                ) : (
+                                  <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                                    <div className="md:col-span-3 space-y-1">
+                                      <span className="text-[10px] text-purple-400 font-mono block">TITLE</span>
+                                      <p className="font-bold text-white text-sm">{plat.data.title}</p>
+                                    </div>
+                                    <div className="md:col-span-6 space-y-1">
+                                      <span className="text-[10px] text-purple-400 font-mono block">DESCRIPTION</span>
+                                      <p className="text-[#E0E0E0] text-[11px] leading-relaxed line-clamp-4 group-hover/box:line-clamp-none transition-all">{plat.data.description}</p>
+                                    </div>
+                                    <div className="md:col-span-3 space-y-1">
+                                      <span className="text-[10px] text-purple-400 font-mono block">HASHTAGS</span>
+                                      <div className="flex flex-wrap gap-1">
+                                        {plat.data.hashtags.map(h => (
+                                          <span key={h} className="text-[10px] font-mono text-purple-300">
+                                            {plat.id === 'youtube' ? h.replace(/^#/, '') : (h.startsWith('#') ? h : '#' + h)}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
                                 {copiedSceneIdx === (-3 - idx) && (
                                   <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded font-bold animate-in fade-in zoom-in">
                                     COPIED
