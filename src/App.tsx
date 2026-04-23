@@ -119,47 +119,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -188,16 +152,23 @@ const [env, setEnv] = useState<Environment>(params.env);
         4. Narrative Cohesion: The 6 scenes must form a continuous, logical story arc (Scene 1: Intro/Start -> Scene 2: Detailed Journey -> Scene 3: Arrival at Location -> Scene 4: Package Handover/Interaction -> Scene 5: Recipient opening ${recipient.package} -> Scene 6: Resolution/Reaction).
         5. Seamless Transitions: Describe the background changing logically. If moving from a vehicle to a porch, show the vehicle coming to a stop and the courier stepping out. No sudden teleportations.
         6. Consistent Package: The package being delivered must be ${recipient.package}. Its appearance must be described consistently in the visual prompts.
+        7. Consistent Identity Instruction: At the end of EVERY scene's "visualDescription", you MUST append the exact sentence: "Keep the same character design, same face, same hairstyle, same outfit, and same body proportions throughout the video. Do not change the character's face, hairstyle, clothing, body shape, or age. No extra people. No costume change. No face distortion."
         
         STORYBOARD SCENE GUIDELINES (ULTRA-DETAILED & NON-AMBIGUOUS):
-        Each "visualDescription" must be a professional-grade prompt for a cinematic AI video model (like Veo). NO AMBIGUITY. Include:
-        - Precise Lighting: (e.g., volumetric lighting, cinematic teal and orange, soft moonlight, harsh neon shadows, golden hour glow).
-        - Texture & Environment: (e.g., dust motes dancing in light, raindrops on a windshield, the detailed texture of the courier's jacket, the specific architectural style of the location).
-        - Mandatory Character Detail Inclusion: In EVERY scene where a character appears, you MUST refer to them by name and immediately follow it with their full visual description (physique, facial features, age, attire, specific equipment like helmet) derived from the CHARACTER VISUAL PROMPTS. This ensures visual consistency across all frames.
-        - Cinematic Composition: Describe the shot like a director (e.g., tight macro shot of an eye, low-angle tracking shot, wide panoramic view with high contrast).
-        - Atmosphere: Describe the "feel" (e.g., gritty, ethereal, nostalgic, high-stakes).
-        - Direct Connection: Each scene must logically follow the previous one's physical setup.
-        - Continuity: Ensure objects (like the package) look the same across all scenes.
+        Each "visualDescription" MUST follow this exact sequence with these specific headers:
+        
+        [CHARACTER LOCK]: [Detailed physical appearance of characters involved, derived from character prompts].
+        [SCENE ACTION]: [One specific, simple action performed by the characters].
+        [BACKGROUND ACTION]: [Specific environment details, textures, and ambient background activity].
+        [LIGHTING]: [Precise lighting description (e.g., volumetric, cinematic, golden hour)].
+        [CAMERA]: [ONLY ONE simple camera movement (Static, Pan, Tilt, or Follow)].
+        [CONSISTENCY RULE]: "Keep the same character design, same face, same hairstyle, same outfit, and same body proportions throughout the video. Do not change the character's face, hairstyle, clothing, body shape, or age. No extra people. No costume change. No face distortion."
+
+        RULES FOR SCENES:
+        - NEVER bury character details inside action descriptions.
+        - Use ONLY ONE camera movement per 8-second scene.
+        - Ensure logical physical continuity between scenes.
+        - NO sudden teleportations or costume changes.
         
         SOCIAL MEDIA PROMOTION REQUIREMENTS:
         Based on the generated cinematic storyboard, create social media promotional content for the following platforms using VIRAL STRATEGIES:
@@ -956,7 +927,7 @@ const [env, setEnv] = useState<Environment>(params.env);
                                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#8E9299] font-mono">
                                   <Package className="w-3 h-3" /> Visual Action
                                 </div>
-                                <p className="text-sm leading-relaxed text-[#E0E0E0]">
+                                <p className="text-sm leading-relaxed text-[#E0E0E0] whitespace-pre-wrap">
                                   {scene.visualDescription}
                                 </p>
                               </div>
