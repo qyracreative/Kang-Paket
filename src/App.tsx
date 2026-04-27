@@ -119,47 +119,11 @@ const DEFAULT_ENV: Environment = {
 };
 
 // --- App Component ---
-const getParams = () => {
-  const params = new URLSearchParams(window.location.search);
 
-  return {
-    courier: {
-      name: params.get("courier_name") || "",
-      type: params.get("courier_type") || "",
-      visual: params.get("courier_visual") || "",
-      personality: params.get("courier_personality") || "",
-      traits: params.get("courier_traits") || "",
-      characteristic: params.get("courier_characteristic") || "",
-      vibe: params.get("courier_vibe") || "",
-      outfit: params.get("courier_outfit") || "",
-      vehicle: params.get("courier_vehicle") || "",
-    },
-    recipient: {
-      name: params.get("recipient_name") || "",
-      type: params.get("recipient_type") || "",
-      visual: params.get("recipient_visual") || "",
-      personality: params.get("recipient_personality") || "",
-      traits: params.get("recipient_traits") || "",
-      characteristic: params.get("recipient_characteristic") || "",
-      vibe: params.get("recipient_vibe") || "",
-      outfit: params.get("recipient_outfit") || "",
-      location: params.get("recipient_location") || "",
-      package: params.get("recipient_package") || "",
-      reaction: params.get("recipient_reaction") || "",
-    },
-    env: {
-      weather: params.get("weather") || "",
-      atmosphere: params.get("atmosphere") || "",
-      tone: params.get("tone") || "",
-    }
-  };
-};
 export default function App() {
-  const params = getParams();
-
-const [courier, setCourier] = useState<Character>(params.courier);
-const [recipient, setRecipient] = useState<Character>(params.recipient);
-const [env, setEnv] = useState<Environment>(params.env);
+  const [courier, setCourier] = useState<Character>(DEFAULT_COURIER);
+  const [recipient, setRecipient] = useState<Character>(DEFAULT_RECIPIENT);
+  const [env, setEnv] = useState<Environment>(DEFAULT_ENV);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
   const [errorHeader, setErrorHeader] = useState<string | null>(null);
@@ -183,7 +147,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         
         MANDATORY REQUIREMENTS:
         1. Character consistency: Provide two detailed visual prompts at the beginning (one for the Courier, one for the Recipient). These prompts must describe their physical appearance, clothing, and overall vibe.
-        2. Dialogue Accuracy & Persona: explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian. The Courier must sound like a courier, and the Recipient must sound like the person described in RECIPIENT DETAILS. DO NOT mix up who is speaking.
+        2. Dialogue Accuracy & Persona: explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian. The Courier must sound like a courier, and the Recipient must sound like the person described in RECIPIENT DETAILS. DO NOT mix up who is speaking. If multiple characters speak in one scene, separate their dialogues with two newlines for clarity.
         3. Language: Use English ONLY for "visualDescription", "courierImagePrompt", and "recipientImagePrompt". Everything else (Story Title, Social Media Titles, Social Media Descriptions, and Dialogues) MUST be in Indonesian.
         4. Narrative Cohesion: The 6 scenes must form a continuous, logical story arc (Scene 1: Intro/Start -> Scene 2: Detailed Journey -> Scene 3: Arrival at Location -> Scene 4: Package Handover/Interaction -> Scene 5: Recipient opening ${recipient.package} -> Scene 6: Resolution/Reaction).
         5. Seamless Transitions: Describe the background changing logically. If moving from a vehicle to a porch, show the vehicle coming to a stop and the courier stepping out. No sudden teleportations.
@@ -193,7 +157,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         STORYBOARD SCENE GUIDELINES (ULTRA-DETAILED & NON-AMBIGUOUS):
         Each "visualDescription" MUST follow this exact sequence with these specific headers:
         
-        [CHARACTER LOCK]: [Detailed physical appearance of characters involved, derived from character prompts].
+        [CHARACTER LOCK]: [MANDATORY: You MUST include the FULL physical description (Name, features, hairstyle, clothing, body type) for EVERY character present in the scene. You must repeat this full description in EVERY scene, never just using the name. Example: "Budi, a delivery man in an orange vest and gray hoodie" or "Sari, an elderly woman in a batik duster and cream cardigan"].
         [SCENE ACTION]: [One specific, simple action performed by the characters].
         [BACKGROUND ACTION]: [Specific environment details, textures, and ambient background activity].
         [LIGHTING]: [Precise lighting description (e.g., volumetric, cinematic, golden hour)].
@@ -201,6 +165,7 @@ const [env, setEnv] = useState<Environment>(params.env);
         [CONSISTENCY RULE]: "Keep the same character design, same face, same hairstyle, same outfit, and same body proportions throughout the video. Do not change the character's face, hairstyle, clothing, body shape, or age. No extra people. No costume change. No face distortion."
 
         RULES FOR SCENES:
+        - MANDATORY REPETITION: Every character mention in [CHARACTER LOCK] must be the complete identity string (Name + Description). NO EXCEPTIONS.
         - NEVER bury character details inside action descriptions.
         - Use ONLY ONE camera movement per 8-second scene.
         - Ensure logical physical continuity between scenes.
@@ -270,7 +235,7 @@ const [env, setEnv] = useState<Environment>(params.env);
               "visualDescription": "...",
               "cameraMovement": "...",
               "sfx": "...",
-              "dialogue": "[Speaker Name]: [Dialogue in Indonesian]"
+              "dialogue": "Detailed dialogues here. If multiple speakers, use this format:\n\nSpeaker 1: [Lines]\n\nSpeaker 2: [Lines]"
             },
             ... (6 scenes total)
           ]
@@ -373,7 +338,11 @@ const [env, setEnv] = useState<Environment>(params.env);
       text += `Visual: ${s.visualDescription}\n`;
       text += `Camera: ${s.cameraMovement}\n`;
       text += `SFX: ${s.sfx}\n`;
-      text += `Dialogue: ${s.dialogue}\n\n`;
+      const formattedDialogue = s.dialogue.split('\n\n')
+        .filter(Boolean)
+        .map(line => `"${line.trim()}"`)
+        .join('\n');
+      text += `Dialogue:\n${formattedDialogue}\n\n`;
     });
 
     navigator.clipboard.writeText(text);
@@ -386,7 +355,11 @@ const [env, setEnv] = useState<Environment>(params.env);
     text += `Visual: ${scene.visualDescription}\n`;
     text += `Camera: ${scene.cameraMovement}\n`;
     text += `SFX: ${scene.sfx}\n`;
-    text += `Dialogue: ${scene.dialogue}`;
+    const formattedDialogue = scene.dialogue.split('\n\n')
+      .filter(Boolean)
+      .map(line => `"${line.trim()}"`)
+      .join('\n');
+    text += `Dialogue:\n${formattedDialogue}`;
 
     navigator.clipboard.writeText(text);
     setCopiedSceneIdx(idx);
@@ -990,9 +963,13 @@ const [env, setEnv] = useState<Environment>(params.env);
                                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#FF4444] font-mono">
                                   <MessageSquare className="w-3 h-3" /> Dialogue (ID)
                                 </div>
-                                <p className="text-sm font-medium text-white italic">
-                                  "{scene.dialogue}"
-                                </p>
+                                <div className="space-y-2">
+                                  {scene.dialogue.split('\n\n').filter(Boolean).map((line, i) => (
+                                    <p key={i} className="text-sm font-medium text-white italic whitespace-pre-wrap">
+                                      "{line.trim()}"
+                                    </p>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           </div>
