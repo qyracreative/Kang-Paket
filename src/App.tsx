@@ -181,20 +181,30 @@ export default function App() {
       
       const prompt = `
         Create a cinematic storyboard and character visual prompts for a short story about a courier delivering a package to a recipient.
-        The story consists of 6 connected scenes. Each scene is 8 seconds (48s total).
+        The story consists of 8 connected scenes. Each scene is 8 seconds (64s total).
         
         MANDATORY REQUIREMENTS:
         1. Character consistency: Provide two detailed visual prompts at the beginning (one for the Courier, one for the Recipient). These prompts must describe their physical appearance, clothing, and overall vibe.
-        2. Dialogue Accuracy & Persona: explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian. The Courier must sound like a courier, and the Recipient must sound like the person described in RECIPIENT DETAILS. DO NOT mix up who is speaking. If multiple characters speak in one scene, separate their dialogues with two newlines for clarity.
+        2. Dialogue Accuracy & Persona: ONE speaker per scene ONLY to ensure audio clarity in an 8-second window. Explicitly state who is speaking (e.g., "Kiko: [Dialogue]"). Dialogues MUST be in Indonesian. The Courier must sound like a courier, and the Recipient must sound like the person described in RECIPIENT DETAILS. DO NOT mix up who is speaking. NEVER use multiple speakers in a single scene.
         3. Language: Use English ONLY for "visualDescription", "courierImagePrompt", and "recipientImagePrompt". Everything else (Story Title, Social Media Titles, Social Media Descriptions, and Dialogues) MUST be in Indonesian.
-        4. Narrative Cohesion: The 6 scenes must form a continuous, logical story arc (Scene 1: Intro/Start -> Scene 2: Detailed Journey -> Scene 3: Arrival at Location -> Scene 4: Package Handover/Interaction -> Scene 5: Recipient opening ${recipient.package} -> Scene 6: Resolution/Reaction).
-        5. Seamless Transitions: Describe the background changing logically. If moving from a vehicle to a porch, show the vehicle coming to a stop and the courier stepping out. No sudden teleportations.
-        6. Consistent Package: The package being delivered must be ${recipient.package}. Its appearance must be described consistently in the visual prompts.
-        7. Consistent Identity Instruction: At the end of EVERY scene's "visualDescription", you MUST append the exact sentence: "Keep the same character design, same face, same hairstyle, same outfit, and same body proportions throughout the video. Do not change the character's face, hairstyle, clothing, body shape, or age. No extra people. No costume change. No face distortion."
+        4. Narrative Cohesion & Flow: The 8 scenes MUST form a single, continuous, and unambiguous story arc. Each scene must start exactly where the previous one ended (Temporal Continuity). There must be NO "time jumps" or gaps in the narrative.
+        5. Cinematic Flow:
+           - Scene 1: Introduction (Courier starting the journey/loading the package).
+           - Scene 2: The Journey (Courier navigating the ${env.weather} environment).
+           - Scene 3: Approaching the Destination (Courier entering ${recipient.location} area).
+           - Scene 4: Arrival (Courier stopping the ${courier.vehicle} and preparing to meet the recipient).
+           - Scene 5: Encounter (Courier walking towards the recipient or knocking).
+           - Scene 6: Interaction (Courier handing over the ${recipient.package} to the recipient).
+           - Scene 7: Climax (Recipient opening the ${recipient.package} and showing a ${recipient.reaction} reaction).
+           - Scene 8: Resolution (Closure/Ending reflecting the ${env.atmosphere} atmosphere).
+        6. Seamless Transitions: Describe the background and character positions changing logically. NO "teleportation". If a character is on the left in Scene 1, they should stay on the left or move realistically in Scene 2.
+        7. Consistent Package: The package being delivered must be ${recipient.package}. Its appearance must be described consistently in every visual prompt.
+        8. Consistent Identity Instruction: At the end of EVERY scene's "visualDescription", you MUST append the exact sentence: "Keep the same character design, same face, same hairstyle, same outfit, and same body proportions throughout the video. Do not change the character's face, hairstyle, clothing, body shape, or age. No extra people. No costume change. No face distortion."
         
         STORYBOARD SCENE GUIDELINES (ULTRA-DETAILED & NON-AMBIGUOUS):
         Each "visualDescription" MUST follow this exact sequence with these specific headers:
         
+        [TEMPORAL LINK]: [MANDATORY: Briefly describe how this scene connects to the EXACT LAST SECOND of the previous scene to ensure zero narrative gaps].
         [CHARACTER LOCK]: [MANDATORY: You MUST include the FULL physical description (Name, features, hairstyle, clothing, body type) for EVERY character present in the scene. You must repeat this full description in EVERY scene, never just using the name. Example: "Budi, a delivery man in an orange vest and gray hoodie" or "Sari, an elderly woman in a batik duster and cream cardigan"].
         [SCENE ACTION]: [One specific, simple action performed by the characters].
         [BACKGROUND ACTION]: [Specific environment details, textures, and ambient background activity].
@@ -203,11 +213,11 @@ export default function App() {
         [CONSISTENCY RULE]: "Keep the same character design, same face, same hairstyle, same outfit, and same body proportions throughout the video. Do not change the character's face, hairstyle, clothing, body shape, or age. No extra people. No costume change. No face distortion."
 
         RULES FOR SCENES:
+        - NARRATIVE ANCHOR: Ensure the "Story Title" reflects the specific ${recipient.package} and ${env.atmosphere}.
         - MANDATORY REPETITION: Every character mention in [CHARACTER LOCK] must be the complete identity string (Name + Description). NO EXCEPTIONS.
-        - NEVER bury character details inside action descriptions.
+        - NO AMBIGUITY: Every action must be clearly described so a director knows exactly where everyone is standing and where they were in the previous scene.
         - Use ONLY ONE camera movement per 8-second scene.
-        - Ensure logical physical continuity between scenes.
-        - NO sudden teleportations or costume changes.
+        - NO sudden teleportations, costume changes, or "magic" package color changes.
         
         SOCIAL MEDIA PROMOTION REQUIREMENTS:
         Based on the generated cinematic storyboard, create social media promotional content for the following platforms using VIRAL STRATEGIES:
@@ -273,9 +283,9 @@ export default function App() {
               "visualDescription": "...",
               "cameraMovement": "...",
               "sfx": "...",
-              "dialogue": "Detailed dialogues here. If multiple speakers, use this format:\n\nSpeaker 1: [Lines]\n\nSpeaker 2: [Lines]"
+              "dialogue": "A single clear dialogue line. Format: Speaker: [Lines]. MANDATORY: Maximum one speaker per scene."
             },
-            ... (6 scenes total)
+            ... (8 scenes total)
           ]
         }
       `;
@@ -771,7 +781,7 @@ export default function App() {
                       </div>
                       <div className="space-y-2">
                         <h3 className="text-lg font-medium text-[#8E9299]">No Story Generated Yet</h3>
-                        <p className="text-sm text-[#555] max-w-xs">Configure your characters and environment, then hit generate to create a 6-scene cinematic prompt.</p>
+                        <p className="text-sm text-[#555] max-w-xs">Configure your characters and environment, then hit generate to create an 8-scene cinematic prompt.</p>
                       </div>
                     </motion.div>
                   ) : isGenerating ? (
