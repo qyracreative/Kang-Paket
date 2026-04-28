@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 import { motion, AnimatePresence } from "motion/react";
 import { 
@@ -168,7 +168,7 @@ export default function App() {
   const [copied, setCopied] = useState(false);
   const [copiedSceneIdx, setCopiedSceneIdx] = useState<number | null>(null);
 
-  const handleGenerate = async () => {
+  const regenerate = async () => {
     setIsGenerating(true);
     setErrorHeader(null);
     try {
@@ -358,6 +358,10 @@ export default function App() {
       setIsGenerating(false);
     }
   };
+
+  useEffect(() => {
+    regenerate();
+  }, []);
 
   const copyToClipboard = () => {
     if (!generatedPrompt) return;
@@ -688,19 +692,19 @@ export default function App() {
           </Tabs>
 
           <Button 
-            onClick={handleGenerate} 
+            onClick={regenerate} 
             disabled={isGenerating}
             className="w-full h-14 bg-[#FF4444] hover:bg-[#FF3333] text-white font-bold text-lg shadow-[0_0_30px_rgba(255,68,68,0.2)] transition-all active:scale-[0.98]"
           >
             {isGenerating ? (
               <>
                 <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                GENERATING STORY...
+                Wait...
               </>
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                GENERATE VEO PROMPT
+                Regenerate
               </>
             )}
           </Button>
@@ -749,7 +753,7 @@ export default function App() {
                         <p className="text-sm text-[#8E9299] max-w-xs">{errorHeader}</p>
                         <Button 
                           variant="link" 
-                          onClick={handleGenerate}
+                          onClick={regenerate}
                           className="text-[#FF4444] hover:text-[#FF3333]"
                         >
                           Try Again
